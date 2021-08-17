@@ -34,6 +34,12 @@ makeConf() {
   users.users.root.openssh.authorizedKeys.keys = [$(while read -r line; do echo -n "
     \"$line\" "; done <<< "$keys")
   ];
+  nix = {
+    package = pkgs.nixUnstable;
+    extraOptions = ''
+      experimental-features = nix-command flakes
+    '';
+  };
 }
 EOF
 
@@ -177,7 +183,7 @@ prepareEnv() {
   if isEFI; then
     esp="$(findESP)"
   else
-    for grubdev in /dev/vda /dev/sda /dev/nvme0n1 ; do [[ -e $grubdev ]] && break; done
+    for grubdev in /dev/vda /dev/sda /dev/nvme0n1 /dev/xvda ; do [[ -e $grubdev ]] && break; done
   fi
 
   # Retrieve root fs block device
